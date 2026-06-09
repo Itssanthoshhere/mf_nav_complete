@@ -1,0 +1,70 @@
+# =============================================================================
+# .github/workflows/fetch_mf_nav.yml
+# =============================================================================
+# Cloud-based daily NAV fetcher using GitHub Actions.
+# Runs every day at 4:00 PM UTC = 9:30 PM IST (no Mac/PC needs to be on).
+#
+# Setup:
+#   1. Push this project to a GitHub repo
+#   2. Enable GitHub Actions (it auto-detects .github/workflows/)
+#   3. The workflow commits the updated CSV back to the repo daily
+#   4. Access data at: https://raw.githubusercontent.com/YOUR_USER/REPO/main/data/latest_nav.csv
+#
+# Optional: set NOTIFY_EMAIL in repo Settings → Secrets to get email alerts
+# =============================================================================
+
+name: Daily MF NAV Fetch
+
+on:
+  schedule:
+    # 16:00 UTC = 21:30 IST (UTC+5:30)
+    - cron: "0 16 * * 1-5"   # weekdays only (markets closed on weekends)
+
+  workflow_dispatch:           # also allow manual trigger from GitHub UI
+
+jobs:
+  fetch-nav:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install requests pandas tqdm
+
+      - name: Fetch latest NAV (AMFI bulk — single request)
+        run: python scripts/01_fetch_latest_nav.py --output data/latest_nav.csv
+
+      - name: Run incremental history update
+        run: python scripts/03_incremental_update.py --notify
+
+      - name: Show stats
+        run: |
+          echo "=== latest_nav.csv ==="
+          wc -l data/latest_nav.csv
+          head -3 data/latest_nav.csv
+
+      - name: Commit updated data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "📈 Daily NAV update — $(date +'%Y-%m-%d')"
+          git push
+
+      - name: Upload CSV as artifact (downloadable from Actions tab)
+        uses: actions/upload-artifact@v4
+        with:
+          name: mf-nav-${{ github.run_id }}
+          path: data/latest_nav.csv
+          retention-days: 7
