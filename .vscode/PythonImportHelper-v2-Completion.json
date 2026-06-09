@@ -1,0 +1,281 @@
+[
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "date",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "ThreadPoolExecutor",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "as_completed",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_amfi_bulk",
+        "kind": 2,
+        "importPath": "scripts.01_fetch_latest_nav",
+        "description": "scripts.01_fetch_latest_nav",
+        "peekOfCode": "def fetch_amfi_bulk() -> pd.DataFrame:\n    \"\"\"\n    Single HTTP request → all ~15k scheme NAVs instantly.\n    AMFI NAVAll.txt format (semicolon-delimited):\n        SchemeCode;ISIN-Div-Payout-ISIN;ISIN-Div-Reinvestment;SchemeName;NAV;Date\n        (Header lines and blank lines are interleaved with section labels)\n    \"\"\"\n    print(\"⬇️  Fetching AMFI bulk NAV data (single request)...\")\n    resp = requests.get(AMFI_URL, timeout=TIMEOUT)\n    resp.raise_for_status()",
+        "detail": "scripts.01_fetch_latest_nav",
+        "documentation": {}
+    },
+    {
+        "label": "enrich_with_mfapi_meta",
+        "kind": 2,
+        "importPath": "scripts.01_fetch_latest_nav",
+        "description": "scripts.01_fetch_latest_nav",
+        "peekOfCode": "def enrich_with_mfapi_meta(df: pd.DataFrame, sample_size: int = None) -> pd.DataFrame:\n    \"\"\"\n    Optional: pull category + type metadata from mfapi for each scheme.\n    Uses the /mf list endpoint which returns schemeCode + schemeName,\n    then merges — no per-scheme API calls needed for basic enrichment.\n    \"\"\"\n    print(\"\\n🔗 Enriching with mfapi category metadata...\")\n    resp = requests.get(MFAPI_BASE, timeout=TIMEOUT)\n    resp.raise_for_status()\n    meta_list = resp.json()",
+        "detail": "scripts.01_fetch_latest_nav",
+        "documentation": {}
+    },
+    {
+        "label": "save",
+        "kind": 2,
+        "importPath": "scripts.01_fetch_latest_nav",
+        "description": "scripts.01_fetch_latest_nav",
+        "peekOfCode": "def save(df: pd.DataFrame, path: Path, label: str) -> None:\n    path.parent.mkdir(parents=True, exist_ok=True)\n    df.to_csv(path, index=False)\n    size_kb = path.stat().st_size // 1024\n    print(f\"\\n💾 {label}\")\n    print(f\"   Path : {path}\")\n    print(f\"   Rows : {len(df):,}  |  Columns : {len(df.columns)}  |  Size : {size_kb} KB\")\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--enrich\", action=\"store_true\",",
+        "detail": "scripts.01_fetch_latest_nav",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "scripts.01_fetch_latest_nav",
+        "description": "scripts.01_fetch_latest_nav",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--enrich\", action=\"store_true\",\n                        help=\"Add category metadata from mfapi\")\n    parser.add_argument(\"--output\", type=str, default=None)\n    args = parser.parse_args()\n    df = fetch_amfi_bulk()\n    out_path = Path(args.output) if args.output else DATA_DIR / \"latest_nav.csv\"\n    save(df, out_path, \"Latest NAV (AMFI bulk)\")\n    if args.enrich:",
+        "detail": "scripts.01_fetch_latest_nav",
+        "documentation": {}
+    },
+    {
+        "label": "load_progress",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def load_progress() -> set:\n    \"\"\"Load set of already-fetched scheme codes.\"\"\"\n    if PROGRESS_F.exists():\n        with open(PROGRESS_F) as f:\n            return set(json.load(f))\n    return set()\ndef save_progress(done: set) -> None:\n    PROGRESS_F.parent.mkdir(parents=True, exist_ok=True)\n    with open(PROGRESS_F, \"w\") as f:\n        json.dump(list(done), f)",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "save_progress",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def save_progress(done: set) -> None:\n    PROGRESS_F.parent.mkdir(parents=True, exist_ok=True)\n    with open(PROGRESS_F, \"w\") as f:\n        json.dump(list(done), f)\ndef get_all_scheme_codes() -> list[dict]:\n    print(\"📋 Fetching scheme master list...\")\n    resp = requests.get(MFAPI_BASE, timeout=TIMEOUT)\n    resp.raise_for_status()\n    schemes = resp.json()\n    print(f\"   ✅ {len(schemes):,} schemes\")",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "get_all_scheme_codes",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def get_all_scheme_codes() -> list[dict]:\n    print(\"📋 Fetching scheme master list...\")\n    resp = requests.get(MFAPI_BASE, timeout=TIMEOUT)\n    resp.raise_for_status()\n    schemes = resp.json()\n    print(f\"   ✅ {len(schemes):,} schemes\")\n    return schemes\ndef fetch_history_one(scheme: dict, since_date: pd.Timestamp = None) -> list[dict]:\n    \"\"\"Fetch full history for one scheme. Returns list of row dicts.\"\"\"\n    code = scheme[\"schemeCode\"]",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_history_one",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def fetch_history_one(scheme: dict, since_date: pd.Timestamp = None) -> list[dict]:\n    \"\"\"Fetch full history for one scheme. Returns list of row dicts.\"\"\"\n    code = scheme[\"schemeCode\"]\n    try:\n        time.sleep(DELAY)\n        resp = requests.get(f\"{MFAPI_BASE}/{code}\", timeout=TIMEOUT)\n        resp.raise_for_status()\n        data = resp.json()\n        if data.get(\"status\") != \"SUCCESS\":\n            return []",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "flush_chunk",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def flush_chunk(all_rows: list, output_path: Path, first_chunk: bool) -> None:\n    \"\"\"Write current batch to CSV (append mode after first chunk).\"\"\"\n    df = pd.DataFrame(all_rows)\n    mode   = \"w\" if first_chunk else \"a\"\n    header = first_chunk\n    df.to_csv(output_path, index=False, mode=mode, header=header)\ndef run_bulk(schemes: list[dict], output_path: Path,\n             since_date: pd.Timestamp, resume: bool) -> None:\n    done_codes  = load_progress() if resume else set()\n    pending     = [s for s in schemes if s[\"schemeCode\"] not in done_codes]",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "run_bulk",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def run_bulk(schemes: list[dict], output_path: Path,\n             since_date: pd.Timestamp, resume: bool) -> None:\n    done_codes  = load_progress() if resume else set()\n    pending     = [s for s in schemes if s[\"schemeCode\"] not in done_codes]\n    total       = len(schemes)\n    skipped     = total - len(pending)\n    print(f\"\\n🚀 History fetch: {len(pending):,} schemes to fetch\"\n          f\"  ({skipped:,} skipped / already done)\")\n    if not pending:\n        print(\"   Nothing to do — all schemes already fetched.\")",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "run_single",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def run_single(scheme_code: int, output_path: Path, since_date: pd.Timestamp) -> None:\n    print(f\"🔍 Fetching history for scheme {scheme_code}...\")\n    scheme = {\"schemeCode\": scheme_code, \"schemeName\": \"\"}\n    rows   = fetch_history_one(scheme, since_date)\n    if not rows:\n        print(\"❌ No data returned.\")\n        return\n    df = pd.DataFrame(rows).sort_values(\"nav_date\")\n    df.to_csv(output_path, index=False)\n    print(f\"✅ {len(df):,} rows → {output_path}\")",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--scheme\",  type=int,   default=None, help=\"Single scheme code\")\n    parser.add_argument(\"--resume\",  action=\"store_true\",      help=\"Skip already fetched schemes\")\n    parser.add_argument(\"--limit\",   type=int,   default=None, help=\"Max number of schemes\")\n    parser.add_argument(\"--since\",   type=str,   default=None, help=\"Only history from date (YYYY-MM-DD)\")\n    parser.add_argument(\"--fund\",    type=str,   default=None, help=\"Filter scheme names containing this string\")\n    parser.add_argument(\"--output\",  type=str,   default=None)\n    parser.add_argument(\"--workers\", type=int,   default=MAX_WORKERS)\n    args = parser.parse_args()",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "MAX_WORKERS",
+        "kind": 5,
+        "importPath": "scripts.02_fetch_nav_history",
+        "description": "scripts.02_fetch_nav_history",
+        "peekOfCode": "MAX_WORKERS = 8      # parallel threads (keep ≤10 to be polite)\nDELAY       = 0.05   # seconds between requests per thread\nTIMEOUT     = 20\nCHUNK_SIZE  = 500    # flush to disk every N schemes (avoid RAM blow-up)\n# ─────────────────────────────────────────────────────────────────────────────\ndef load_progress() -> set:\n    \"\"\"Load set of already-fetched scheme codes.\"\"\"\n    if PROGRESS_F.exists():\n        with open(PROGRESS_F) as f:\n            return set(json.load(f))",
+        "detail": "scripts.02_fetch_nav_history",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_amfi_bulk",
+        "kind": 2,
+        "importPath": "scripts.03_incremental_update",
+        "description": "scripts.03_incremental_update",
+        "peekOfCode": "def fetch_amfi_bulk() -> pd.DataFrame:\n    resp = requests.get(AMFI_URL, timeout=TIMEOUT)\n    resp.raise_for_status()\n    rows = []\n    for line in resp.text.strip().split(\"\\n\"):\n        line = line.strip()\n        if \";\" not in line:\n            continue\n        parts = line.split(\";\")\n        if len(parts) < 5 or parts[0].strip().lower() == \"scheme code\":",
+        "detail": "scripts.03_incremental_update",
+        "documentation": {}
+    },
+    {
+        "label": "run_update",
+        "kind": 2,
+        "importPath": "scripts.03_incremental_update",
+        "description": "scripts.03_incremental_update",
+        "peekOfCode": "def run_update(notify: bool) -> dict:\n    DATA_DIR.mkdir(parents=True, exist_ok=True)\n    run_time  = datetime.now()\n    stats     = {\"run_time\": run_time.isoformat(), \"status\": \"ok\"}\n    # ── Load existing data ────────────────────────────────────────────────────\n    latest_path = DATA_DIR / \"latest_nav.csv\"\n    if latest_path.exists():\n        old_df = pd.read_csv(latest_path, parse_dates=[\"nav_date\"])\n        old_map = dict(zip(old_df[\"scheme_code\"], old_df[\"nav_date\"]))\n        stats[\"schemes_before\"] = len(old_df)",
+        "detail": "scripts.03_incremental_update",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "scripts.03_incremental_update",
+        "description": "scripts.03_incremental_update",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--notify\", action=\"store_true\",\n                        help=\"Print a formatted summary (for cron email notifications)\")\n    args = parser.parse_args()\n    run_update(args.notify)\nif __name__ == \"__main__\":\n    main()",
+        "detail": "scripts.03_incremental_update",
+        "documentation": {}
+    }
+]
